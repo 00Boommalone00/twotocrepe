@@ -31,7 +31,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .page{display:none;padding:8px 12px;}
 .page.active{display:block;}
 .queue-list{display:flex;flex-direction:column;gap:8px;}
-.order-card{background:white;border-radius:14px;border:2px solid var(--border);padding:12px;transition:all .2s;}
+.order-card{background:white;border-radius:14px;border:2px solid var(--border);padding:12px;}
 .order-card.waiting{border-color:var(--accent-lt);}
 .order-card.cooking{border-color:#FFD54F;background:#FFFDE7;}
 .order-card.done{border-color:#A5D6A7;background:#F1F8E9;opacity:.7;}
@@ -46,27 +46,37 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .card-detail{font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:6px;}
 .card-note{font-size:.75rem;background:#FFF3E0;border-left:3px solid var(--accent);padding:4px 8px;border-radius:0 6px 6px 0;margin-bottom:6px;}
 .card-actions{display:flex;gap:6px;margin-top:10px;}
-.act-btn{flex:1;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:white;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.act-btn{flex:1;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:white;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;}
 .act-btn:active{transform:scale(.97);}
 .btn-cook{border-color:#FFD54F;color:#E65100;background:#FFFDE7;}
 .btn-done{border-color:#A5D6A7;color:#2E7D32;background:#F1F8E9;}
 .btn-del{border-color:#FFCDD2;color:var(--danger);}
-.rpt-section{background:white;border-radius:14px;border:1px solid var(--border);padding:12px;margin:0 0 10px;}
-.rpt-title{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:600;margin-bottom:10px;}
+/* REPORT */
+.rpt-section{background:white;border-radius:14px;border:1px solid var(--border);padding:12px;margin-bottom:10px;}
+.rpt-title{font-family:'Kanit',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 .top-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.rank{width:20px;height:20px;border-radius:50%;background:var(--accent-lt);color:var(--accent-dk);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.top-bar{height:6px;border-radius:3px;background:var(--accent-lt);margin-top:2px;}
-.top-fill{height:100%;border-radius:3px;background:var(--accent);}
+.rank{width:22px;height:22px;border-radius:50%;background:var(--accent-lt);color:var(--accent-dk);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.top-bar-wrap{flex:1;}
+.top-name{font-size:.82rem;font-weight:500;margin-bottom:2px;}
+.top-bar{height:7px;border-radius:4px;background:#F5E6D3;margin-top:2px;}
+.top-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s;}
+.top-count{font-size:.82rem;font-weight:700;color:var(--accent-dk);white-space:nowrap;}
+.ing-section{margin-bottom:12px;}
+.ing-title{font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 .hist-row{display:flex;justify-content:space-between;font-size:.82rem;padding:7px 0;border-bottom:1px solid var(--border);}
 .hist-row:last-child{border-bottom:none;}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.9rem;}
 .empty-icon{font-size:2.5rem;margin-bottom:8px;}
+/* SETTINGS */
 .setting-row{background:white;border-radius:12px;border:1px solid var(--border);padding:12px;margin-bottom:8px;}
 .setting-label{font-size:.82rem;font-weight:600;margin-bottom:6px;}
 .setting-input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Sarabun',sans-serif;font-size:.85rem;outline:none;}
 .setting-input:focus{border-color:var(--accent);}
 .setting-btn{width:100%;padding:10px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:'Kanit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
 .setting-note{font-size:.75rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+.rpt-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.rpt-tab{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--muted);}
+.rpt-tab.active{background:var(--accent);border-color:var(--accent);color:white;}
 </style>
 </head>
 <body>
@@ -74,7 +84,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="hdr">
   <div class="hdr-brand">🥞 หน้าร้าน TWO TO CREPE</div>
   <div class="hdr-right">
-    <div class="sync-dot" id="syncDot"></div>
+    <div class="sync-dot"></div>
     <div class="sync-txt" id="syncTxt">กำลังดูข้อมูล...</div>
     <div class="hdr-clock" id="clk"></div>
   </div>
@@ -92,6 +102,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="tab" onclick="switchTab('settings',this)">⚙️ ตั้งค่า</div>
 </div>
 
+<!-- QUEUE -->
 <div class="page active" id="page-queue">
   <div style="display:flex;justify-content:flex-end;padding:8px 0;">
     <button onclick="clearDone()" style="padding:6px 14px;border-radius:9px;border:1px solid var(--border);background:white;font-size:.78rem;cursor:pointer;color:var(--muted);">🗑 ล้างคิวเสร็จ</button>
@@ -101,19 +112,52 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- REPORT -->
 <div class="page" id="page-report">
   <div style="padding-top:8px;">
+    <!-- Summary Stats -->
     <div class="rpt-section">
-      <div class="rpt-title">🏆 เมนูขายดี (วันนี้)</div>
-      <div id="topItemsRpt"><div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div></div>
+      <div class="rpt-title">📈 สรุปภาพรวม</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="rptSummary">
+        <div style="background:var(--bg);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:.72rem;color:var(--muted);">รายได้ทั้งหมด</div>
+          <div style="font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;color:var(--accent);" id="rpt-total-rev">฿0</div>
+        </div>
+        <div style="background:var(--bg);border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:.72rem;color:var(--muted);">ออเดอร์ทั้งหมด</div>
+          <div style="font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;" id="rpt-total-ord">0</div>
+        </div>
+      </div>
     </div>
+
+    <!-- เมนูขายดี -->
     <div class="rpt-section">
-      <div class="rpt-title">🕐 ประวัติออเดอร์</div>
+      <div class="rpt-title">🏆 เมนูขายดี</div>
+      <div id="topMenus"><div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div></div>
+    </div>
+
+    <!-- วัตถุดิบขายดี -->
+    <div class="rpt-section">
+      <div class="rpt-title">🧂 วัตถุดิบที่ถูกสั่งบ่อย</div>
+      <div class="rpt-tabs">
+        <button class="rpt-tab active" onclick="showIngTab('all',this)">ทั้งหมด</button>
+        <button class="rpt-tab" onclick="showIngTab('main',this)">ไส้หลัก</button>
+        <button class="rpt-tab" onclick="showIngTab('free',this)">ท็อปปิ้งฟรี</button>
+      </div>
+      <div id="ingAll"></div>
+      <div id="ingMain" style="display:none"></div>
+      <div id="ingFree" style="display:none"></div>
+    </div>
+
+    <!-- ประวัติ -->
+    <div class="rpt-section">
+      <div class="rpt-title">🕐 ประวัติออเดอร์ทั้งหมด</div>
       <div id="histRpt"><div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div></div>
     </div>
   </div>
 </div>
 
+<!-- SETTINGS -->
 <div class="page" id="page-settings">
   <div style="padding-top:8px;">
     <div class="setting-row">
@@ -129,9 +173,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div id="qrOutput" style="text-align:center;margin-top:10px;"></div>
     </div>
     <div class="setting-row">
-      <div class="setting-label">🗑 ล้างคิวทั้งหมด</div>
-      <div class="setting-note" style="margin-bottom:8px;">ล้างคิวออกจากหน้าจอ และระบบจะไม่ดึงออเดอร์เก่ากลับมาอีก</div>
-      <button onclick="hardReset()" style="width:100%;padding:10px;background:white;border:1.5px solid #FFCDD2;border-radius:10px;color:var(--danger);font-family:'Sarabun',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;">🗑 ล้างคิวทั้งหมด (เริ่มวันใหม่)</button>
+      <div class="setting-label">🗑 ล้างคิวทั้งหมด (เริ่มวันใหม่)</div>
+      <div class="setting-note" style="margin-bottom:8px;">ล้างคิวออกจากหน้าจอ ไม่เด้งกลับมาอีก</div>
+      <button onclick="hardReset()" style="width:100%;padding:10px;background:white;border:1.5px solid #FFCDD2;border-radius:10px;color:var(--danger);font-family:'Sarabun',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;">🗑 ล้างคิวทั้งหมด</button>
     </div>
   </div>
 </div>
@@ -139,93 +183,75 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <script>
 let SCRIPT_URL = localStorage.getItem('ttc_script_url') || '';
 let orders = JSON.parse(localStorage.getItem('ttc_orders') || '[]');
-// เก็บ timestamp ของออเดอร์ที่ถูกลบ เพื่อไม่ให้ดึงกลับมา
+let allSheetOrders = []; // เก็บข้อมูลทั้งหมดจาก Sheets สำหรับรายงาน
 let ignoredKeys = JSON.parse(localStorage.getItem('ttc_ignored') || '[]');
-let fetchTimer = null;
 
-setInterval(()=>{document.getElementById('clk').textContent = new Date().toLocaleTimeString('th-TH');},1000);
+setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('th-TH');},1000);
 
-function switchTab(tab, btn) {
+function orderKey(o){ return o.queue+'_'+o.timestamp; }
+
+function switchTab(tab,btn){
   document.querySelectorAll('.page').forEach(p=>p.style.display='none');
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+tab).style.display='block';
   document.getElementById('page-'+tab).classList.add('active');
   btn.classList.add('active');
   if(tab==='report') renderReport();
-  if(tab==='settings') document.getElementById('scriptUrlInput').value = SCRIPT_URL;
+  if(tab==='settings') document.getElementById('scriptUrlInput').value=SCRIPT_URL;
 }
 
-function orderKey(o) {
-  return o.queue + '_' + o.timestamp;
-}
-
-async function fetchOrders() {
-  if(!SCRIPT_URL) { document.getElementById('syncTxt').textContent = 'ยังไม่ตั้งค่า URL'; return; }
-  try {
-    const res = await fetch(SCRIPT_URL + '?action=get');
+async function fetchOrders(){
+  if(!SCRIPT_URL){document.getElementById('syncTxt').textContent='ยังไม่ตั้งค่า URL';return;}
+  try{
+    const res = await fetch(SCRIPT_URL+'?action=get');
     const data = await res.json();
-    if(data.orders) {
-      data.orders.forEach(remote => {
-        const key = orderKey(remote);
-        // ข้ามออเดอร์ที่ถูก ignore ไปแล้ว
+    if(data.orders){
+      allSheetOrders = data.orders; // เก็บทั้งหมดสำหรับรายงาน
+      data.orders.forEach(remote=>{
+        const key=orderKey(remote);
         if(ignoredKeys.includes(key)) return;
-        const existing = orders.find(o => orderKey(o) === key);
-        if(!existing) {
-          orders.push({...remote, status:'waiting'});
-          playNotif();
-        }
+        const existing=orders.find(o=>orderKey(o)===key);
+        if(!existing){ orders.push({...remote,status:'waiting'}); playNotif(); }
       });
-      saveOrders();
-      renderQueue();
-      updateStats();
+      saveOrders(); renderQueue(); updateStats();
     }
-    document.getElementById('syncTxt').textContent = 'อัปเดตแล้ว';
-  } catch(e) {
-    document.getElementById('syncTxt').textContent = 'ไม่ได้เชื่อมต่อ';
-  }
+    document.getElementById('syncTxt').textContent='อัปเดตแล้ว';
+  }catch(e){ document.getElementById('syncTxt').textContent='ไม่ได้เชื่อมต่อ'; }
 }
 
-function playNotif() {
-  try {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.4);
-    osc.start(); osc.stop(ctx.currentTime+.4);
-  } catch(e){}
+function playNotif(){
+  try{
+    const ctx=new AudioContext(),osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=880;
+    gain.gain.setValueAtTime(.3,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+    osc.start();osc.stop(ctx.currentTime+.4);
+  }catch(e){}
 }
 
-setInterval(fetchOrders, 15000);
+setInterval(fetchOrders,15000);
 fetchOrders();
 
-function renderQueue() {
-  const el = document.getElementById('queueList');
-  const active = orders.filter(o=>o.status!=='done');
-  const done = orders.filter(o=>o.status==='done');
-  const all = [...active, ...done];
-  if(!all.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>'; return; }
-  el.innerHTML = all.map((o,idx)=>{
-    const sClass={waiting:'s-waiting',cooking:'s-cooking',done:'s-done'}[o.status];
-    const cClass=o.status;
-    const sLabel={waiting:'รอทำ',cooking:'🔥 กำลังทำ',done:'✅ เสร็จแล้ว'}[o.status];
-    const parts=[];
-    if(o.dough&&o.dough!=='-') parts.push('แป้ง: '+o.dough);
-    if(o.toppings) parts.push('ไส้: '+o.toppings);
-    if(o.freeToppings) parts.push('ฟรี: '+o.freeToppings);
-    if(o.container) parts.push(o.container);
-    return `<div class="order-card ${cClass}">
+function renderQueue(){
+  const el=document.getElementById('queueList');
+  const all=[...orders.filter(o=>o.status!=='done'),...orders.filter(o=>o.status==='done')];
+  if(!all.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>';return;}
+  el.innerHTML=all.map((o,idx)=>{
+    const sc={waiting:'s-waiting',cooking:'s-cooking',done:'s-done'}[o.status];
+    const sl={waiting:'รอทำ',cooking:'🔥 กำลังทำ',done:'✅ เสร็จแล้ว'}[o.status];
+    const pts=[];
+    if(o.dough&&o.dough!=='-') pts.push('แป้ง: '+o.dough);
+    if(o.toppings) pts.push('ไส้: '+o.toppings);
+    if(o.freeToppings) pts.push('ฟรี: '+o.freeToppings);
+    if(o.container) pts.push(o.container);
+    return `<div class="order-card ${o.status}">
       <div class="card-top">
         <div class="card-queue">#${o.queue}</div>
-        <div style="text-align:right;">
-          <span class="status-badge ${sClass}">${sLabel}</span>
-          <div class="card-time">${o.timestamp||''}</div>
-        </div>
+        <div style="text-align:right;"><span class="status-badge ${sc}">${sl}</span><div class="card-time">${o.timestamp||''}</div></div>
       </div>
       <div class="card-menu">${o.menuName||'สร้างเอง'} — ฿${o.total}</div>
-      ${parts.length?`<div class="card-detail">${parts.join(' · ')}</div>`:''}
+      ${pts.length?`<div class="card-detail">${pts.join(' · ')}</div>`:''}
       ${o.note?`<div class="card-note">📝 ${o.note}</div>`:''}
       <div class="card-actions">
         ${o.status==='waiting'?`<button class="act-btn btn-cook" onclick="setStatus(${idx},'cooking')">🔥 เริ่มทำ</button>`:''}
@@ -237,86 +263,142 @@ function renderQueue() {
   }).join('');
 }
 
-function setStatus(idx, status) {
-  orders[idx].status = status;
-  saveOrders(); renderQueue(); updateStats();
-}
+function setStatus(idx,s){orders[idx].status=s;saveOrders();renderQueue();updateStats();}
 
-function removeOrder(idx) {
-  // บันทึก key ไว้ใน ignored เพื่อไม่ให้ดึงกลับมา
-  const key = orderKey(orders[idx]);
+function removeOrder(idx){
+  const key=orderKey(orders[idx]);
   if(!ignoredKeys.includes(key)) ignoredKeys.push(key);
-  localStorage.setItem('ttc_ignored', JSON.stringify(ignoredKeys.slice(-500)));
-  orders.splice(idx,1);
-  saveOrders(); renderQueue(); updateStats();
+  localStorage.setItem('ttc_ignored',JSON.stringify(ignoredKeys.slice(-500)));
+  orders.splice(idx,1);saveOrders();renderQueue();updateStats();
 }
 
-function clearDone() {
-  // ignore คิวที่เสร็จแล้วทั้งหมด
+function clearDone(){
   orders.filter(o=>o.status==='done').forEach(o=>{
-    const key = orderKey(o);
+    const key=orderKey(o);
     if(!ignoredKeys.includes(key)) ignoredKeys.push(key);
   });
-  localStorage.setItem('ttc_ignored', JSON.stringify(ignoredKeys.slice(-500)));
-  orders = orders.filter(o=>o.status!=='done');
-  saveOrders(); renderQueue(); updateStats();
+  localStorage.setItem('ttc_ignored',JSON.stringify(ignoredKeys.slice(-500)));
+  orders=orders.filter(o=>o.status!=='done');
+  saveOrders();renderQueue();updateStats();
 }
 
-function hardReset() {
+function hardReset(){
   if(!confirm('ล้างคิวทั้งหมดและเริ่มวันใหม่ไหมครับ?')) return;
-  // ignore ทั้งหมด
-  orders.forEach(o=>{
-    const key = orderKey(o);
-    if(!ignoredKeys.includes(key)) ignoredKeys.push(key);
-  });
-  localStorage.setItem('ttc_ignored', JSON.stringify(ignoredKeys.slice(-500)));
-  orders = [];
-  saveOrders(); renderQueue(); updateStats();
+  orders.forEach(o=>{const key=orderKey(o);if(!ignoredKeys.includes(key))ignoredKeys.push(key);});
+  localStorage.setItem('ttc_ignored',JSON.stringify(ignoredKeys.slice(-500)));
+  orders=[];saveOrders();renderQueue();updateStats();
   alert('✅ ล้างเรียบร้อยแล้ว!');
 }
 
-function saveOrders() {
-  localStorage.setItem('ttc_orders', JSON.stringify(orders.slice(-100)));
+function saveOrders(){localStorage.setItem('ttc_orders',JSON.stringify(orders.slice(-100)));}
+
+function updateStats(){
+  const rev=orders.reduce((s,o)=>s+parseInt(o.total||0),0);
+  document.getElementById('s-rev').textContent='฿'+rev;
+  document.getElementById('s-ord').textContent=orders.length;
+  document.getElementById('s-wait').textContent=orders.filter(o=>o.status==='waiting').length;
 }
 
-function updateStats() {
-  const rev = orders.reduce((s,o)=>s+parseInt(o.total||0),0);
-  document.getElementById('s-rev').textContent = '฿'+rev;
-  document.getElementById('s-ord').textContent = orders.length;
-  document.getElementById('s-wait').textContent = orders.filter(o=>o.status==='waiting').length;
+// ===== REPORT =====
+function renderReport(){
+  const src = allSheetOrders.length ? allSheetOrders : orders;
+
+  // Summary
+  const totalRev = src.reduce((s,o)=>s+parseInt(o.total||0),0);
+  document.getElementById('rpt-total-rev').textContent='฿'+totalRev;
+  document.getElementById('rpt-total-ord').textContent=src.length;
+
+  // เมนูขายดี
+  const mc={};
+  src.forEach(o=>{const n=o.menuName||'สร้างเอง';mc[n]=(mc[n]||0)+1;});
+  const ms=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const mm=ms[0]?.[1]||1;
+  document.getElementById('topMenus').innerHTML=ms.length===0
+    ?'<div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div>'
+    :ms.map(([n,c],i)=>topRow(i+1,n,c,mm,'var(--accent)')).join('');
+
+  // วัตถุดิบ — ไส้หลัก
+  const mainIng={};
+  src.forEach(o=>{
+    if(!o.toppings) return;
+    o.toppings.split(',').forEach(t=>{
+      const tt=t.trim();if(!tt)return;
+      mainIng[tt]=(mainIng[tt]||0)+1;
+    });
+  });
+
+  // วัตถุดิบ — ท็อปปิ้งฟรี
+  const freeIng={};
+  src.forEach(o=>{
+    if(!o.freeToppings) return;
+    o.freeToppings.split(',').forEach(t=>{
+      const tt=t.trim();if(!tt)return;
+      freeIng[tt]=(freeIng[tt]||0)+1;
+    });
+  });
+
+  // รวม
+  const allIng={...mainIng};
+  Object.entries(freeIng).forEach(([k,v])=>{allIng[k]=(allIng[k]||0)+v;});
+
+  const renderIng=(obj,color)=>{
+    const sorted=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const max=sorted[0]?.[1]||1;
+    return sorted.length===0
+      ?'<div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div>'
+      :sorted.map(([n,c],i)=>topRow(i+1,n,c,max,color)).join('');
+  };
+
+  document.getElementById('ingAll').innerHTML=renderIng(allIng,'#E8873A');
+  document.getElementById('ingMain').innerHTML=renderIng(mainIng,'#C4601A');
+  document.getElementById('ingFree').innerHTML=renderIng(freeIng,'#2E7D32');
+
+  // ประวัติ
+  document.getElementById('histRpt').innerHTML=src.length===0
+    ?'<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div>'
+    :[...src].reverse().slice(0,20).map(o=>`
+      <div class="hist-row">
+        <span style="font-weight:600;">#${o.queue}</span>
+        <span style="color:var(--muted);font-size:.75rem;flex:1;padding:0 8px;">${o.menuName||'สร้างเอง'}${o.toppings?'<br><span style="font-size:.7rem;">'+o.toppings+'</span>':''}</span>
+        <span style="font-weight:700;color:var(--accent-dk);">฿${o.total}</span>
+      </div>`).join('');
 }
 
-function renderReport() {
-  const ic={};
-  orders.forEach(o=>{ const n=o.menuName||'สร้างเอง'; ic[n]=(ic[n]||0)+1; });
-  const sorted=Object.entries(ic).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const max=sorted[0]?.[1]||1;
-  document.getElementById('topItemsRpt').innerHTML = sorted.length===0
-    ? '<div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div>'
-    : sorted.map(([n,c],i)=>`<div class="top-row"><div class="rank">${i+1}</div><div style="flex:1"><div style="font-size:.82rem;">${n}</div><div class="top-bar"><div class="top-fill" style="width:${Math.round(c/max*100)}%"></div></div></div><div style="font-size:.82rem;font-weight:700;color:var(--accent-dk);">${c}</div></div>`).join('');
-  document.getElementById('histRpt').innerHTML = orders.length===0
-    ? '<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div>'
-    : [...orders].reverse().slice(0,15).map(o=>`<div class="hist-row"><span style="font-weight:600;">#${o.queue}</span><span style="color:var(--muted);font-size:.78rem;">${o.menuName||'สร้างเอง'}</span><span style="font-weight:600;color:var(--accent-dk);">฿${o.total}</span></div>`).join('');
+function topRow(rank,name,count,max,color){
+  const pct=Math.round(count/max*100);
+  return `<div class="top-row">
+    <div class="rank">${rank}</div>
+    <div class="top-bar-wrap">
+      <div class="top-name">${name}</div>
+      <div class="top-bar"><div class="top-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>
+    <div class="top-count">${count}x</div>
+  </div>`;
 }
 
-function saveScriptUrl() {
-  const url = document.getElementById('scriptUrlInput').value.trim();
+function showIngTab(tab,btn){
+  document.querySelectorAll('.rpt-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ingAll').style.display=tab==='all'?'block':'none';
+  document.getElementById('ingMain').style.display=tab==='main'?'block':'none';
+  document.getElementById('ingFree').style.display=tab==='free'?'block':'none';
+}
+
+function saveScriptUrl(){
+  const url=document.getElementById('scriptUrlInput').value.trim();
   if(!url){alert('กรุณาใส่ URL');return;}
-  SCRIPT_URL = url;
-  localStorage.setItem('ttc_script_url', url);
-  alert('✅ บันทึกแล้ว!');
-  fetchOrders();
+  SCRIPT_URL=url;localStorage.setItem('ttc_script_url',url);
+  alert('✅ บันทึกแล้ว!');fetchOrders();
 }
 
-function genQR() {
-  const url = document.getElementById('qrUrlInput').value.trim();
+function genQR(){
+  const url=document.getElementById('qrUrlInput').value.trim();
   if(!url){alert('กรุณาใส่ URL');return;}
-  document.getElementById('qrOutput').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}" style="border-radius:10px;border:1px solid var(--border);" alt="QR Code"><div style="font-size:.75rem;color:var(--muted);margin-top:6px;">กดค้างที่รูปเพื่อบันทึก</div>`;
+  document.getElementById('qrOutput').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}" style="border-radius:10px;border:1px solid var(--border);" alt="QR Code"><div style="font-size:.75rem;color:var(--muted);margin-top:6px;">กดค้างที่รูปเพื่อบันทึก</div>`;
 }
 
-updateStats();
-renderQueue();
-document.getElementById('scriptUrlInput').value = SCRIPT_URL;
+updateStats();renderQueue();
+document.getElementById('scriptUrlInput').value=SCRIPT_URL;
 </script>
 </body>
 </html>
