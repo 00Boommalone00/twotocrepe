@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TWO TO CREPE — หน้าร้าน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Kanit:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF8F0;--surface:#fff;--accent:#E8873A;--accent-dk:#C4601A;--accent-lt:#FFDDB5;
+  --brown:#3A2010;--text:#2D1B0E;--muted:#8B6B4A;--border:#EED9C0;
+  --success:#2E7D32;--danger:#C62828;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.hdr{background:var(--brown);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.hdr-brand{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:#FFF8F0;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#4CAF50;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sync-txt{font-size:.75rem;color:#C9A97A;}
+.hdr-clock{font-size:.8rem;color:#C9A97A;}
+
+/* TABS */
+.tab-bar{display:flex;background:white;border-bottom:1px solid var(--border);}
+.tab{flex:1;padding:11px 4px;text-align:center;font-size:.82rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;}
+.stat-card{background:white;border-radius:12px;border:1px solid var(--border);padding:10px;text-align:center;}
+.stat-label{font-size:.7rem;color:var(--muted);margin-bottom:3px;}
+.stat-val{font-family:'Kanit',sans-serif;font-size:1.2rem;font-weight:700;}
+.stat-val.accent{color:var(--accent);}
+
+/* QUEUE */
+.page{display:none;padding:8px 12px;}
+.page.active{display:block;}
+.queue-list{display:flex;flex-direction:column;gap:8px;}
+
+.order-card{background:white;border-radius:14px;border:2px solid var(--border);padding:12px;transition:all .2s;}
+.order-card.waiting{border-color:var(--accent-lt);}
+.order-card.cooking{border-color:#FFD54F;background:#FFFDE7;}
+.order-card.done{border-color:#A5D6A7;background:#F1F8E9;opacity:.7;}
+
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-queue{font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);}
+.card-time{font-size:.72rem;color:var(--muted);}
+.status-badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:10px;}
+.s-waiting{background:var(--accent-lt);color:var(--accent-dk);}
+.s-cooking{background:#FFE082;color:#E65100;}
+.s-done{background:#C8E6C9;color:#2E7D32;}
+
+.card-menu{font-size:.9rem;font-weight:600;margin-bottom:3px;}
+.card-detail{font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:6px;}
+.card-note{font-size:.75rem;background:#FFF3E0;border-left:3px solid var(--accent);padding:4px 8px;border-radius:0 6px 6px 0;margin-bottom:6px;}
+.card-total{font-size:.9rem;font-weight:700;color:var(--accent-dk);}
+
+.card-actions{display:flex;gap:6px;margin-top:10px;}
+.act-btn{flex:1;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:white;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.act-btn:active{transform:scale(.97);}
+.btn-cook{border-color:#FFD54F;color:#E65100;background:#FFFDE7;}
+.btn-done{border-color:#A5D6A7;color:#2E7D32;background:#F1F8E9;}
+.btn-del{border-color:#FFCDD2;color:var(--danger);}
+
+/* REPORT */
+.rpt-section{background:white;border-radius:14px;border:1px solid var(--border);padding:12px;margin:0 0 10px;}
+.rpt-title{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:600;margin-bottom:10px;}
+.top-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.rank{width:20px;height:20px;border-radius:50%;background:var(--accent-lt);color:var(--accent-dk);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.top-bar{height:6px;border-radius:3px;background:var(--accent-lt);margin-top:2px;}
+.top-fill{height:100%;border-radius:3px;background:var(--accent);}
+.hist-row{display:flex;justify-content:space-between;font-size:.82rem;padding:7px 0;border-bottom:1px solid var(--border);}
+.hist-row:last-child{border-bottom:none;}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.9rem;}
+.empty-icon{font-size:2.5rem;margin-bottom:8px;}
+
+/* SETTINGS */
+.setting-row{background:white;border-radius:12px;border:1px solid var(--border);padding:12px;margin-bottom:8px;}
+.setting-label{font-size:.82rem;font-weight:600;margin-bottom:6px;}
+.setting-input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Sarabun',sans-serif;font-size:.85rem;outline:none;}
+.setting-input:focus{border-color:var(--accent);}
+.setting-btn{width:100%;padding:10px;background:var(--accent);color:white;border:none;border-radius:10px;font-family:'Kanit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.setting-note{font-size:.75rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">🥞 หน้าร้าน TWO TO CREPE</div>
+  <div class="hdr-right">
+    <div class="sync-dot" id="syncDot"></div>
+    <div class="sync-txt" id="syncTxt">กำลังดูข้อมูล...</div>
+    <div class="hdr-clock" id="clk"></div>
+  </div>
+</div>
+
+<div class="stats" id="statsBar">
+  <div class="stat-card"><div class="stat-label">รายได้วันนี้</div><div class="stat-val accent" id="s-rev">฿0</div></div>
+  <div class="stat-card"><div class="stat-label">ออเดอร์</div><div class="stat-val" id="s-ord">0</div></div>
+  <div class="stat-card"><div class="stat-label">รอทำ</div><div class="stat-val" id="s-wait">0</div></div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('queue',this)">🔔 คิว</div>
+  <div class="tab" onclick="switchTab('report',this)">📊 รายงาน</div>
+  <div class="tab" onclick="switchTab('settings',this)">⚙️ ตั้งค่า</div>
+</div>
+
+<!-- QUEUE PAGE -->
+<div class="page active" id="page-queue">
+  <div style="display:flex;justify-content:flex-end;padding:8px 0;">
+    <button onclick="clearDone()" style="padding:6px 14px;border-radius:9px;border:1px solid var(--border);background:white;font-size:.78rem;cursor:pointer;color:var(--muted);">🗑 ล้างคิวเสร็จ</button>
+  </div>
+  <div class="queue-list" id="queueList">
+    <div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>
+  </div>
+</div>
+
+<!-- REPORT PAGE -->
+<div class="page" id="page-report">
+  <div style="padding-top:8px;">
+    <div class="rpt-section">
+      <div class="rpt-title">🏆 เมนูขายดี (วันนี้)</div>
+      <div id="topItemsRpt"><div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div></div>
+    </div>
+    <div class="rpt-section">
+      <div class="rpt-title">🕐 ประวัติออเดอร์</div>
+      <div id="histRpt"><div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div style="padding-top:8px;">
+    <div class="setting-row">
+      <div class="setting-label">🔗 Google Apps Script URL</div>
+      <input type="text" class="setting-input" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
+      <div class="setting-note">ใส่ URL ที่ได้จากการ Deploy Apps Script แล้วกดบันทึก ระบบจะโหลดออเดอร์อัตโนมัติ</div>
+      <button class="setting-btn" onclick="saveScriptUrl()">💾 บันทึก URL</button>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">📱 QR Code สำหรับลูกค้า</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">ใส่ URL ของหน้าสั่งอาหาร (order.html บน GitHub Pages)</div>
+      <input type="text" class="setting-input" id="qrUrlInput" placeholder="https://yourusername.github.io/twotocrepe/order.html">
+      <button class="setting-btn" onclick="genQR()" style="background:var(--brown);">📷 สร้าง QR Code</button>
+      <div id="qrOutput" style="text-align:center;margin-top:10px;"></div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">🔄 รีเซ็ตคิว</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">ล้างคิวทั้งหมดในหน้าจอ (ไม่กระทบ Google Sheets)</div>
+      <button onclick="resetAllQueues()" style="width:100%;padding:10px;background:white;border:1.5px solid #FFCDD2;border-radius:10px;color:var(--danger);font-family:'Sarabun',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;">🗑 ล้างคิวทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STORAGE for Script URL =====
+let SCRIPT_URL = localStorage.getItem('ttc_script_url') || '';
+let orders = JSON.parse(localStorage.getItem('ttc_orders') || '[]');
+
+// ===== CLOCK =====
+setInterval(()=>{document.getElementById('clk').textContent = new Date().toLocaleTimeString('th-TH');},1000);
+
+// ===== TABS =====
+function switchTab(tab, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).style.display='block';
+  document.getElementById('page-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if(tab==='report') renderReport();
+  if(tab==='settings') {
+    document.getElementById('scriptUrlInput').value = SCRIPT_URL;
+  }
+}
+
+// ===== FETCH ORDERS from Google Sheets via Apps Script =====
+async function fetchOrders() {
+  if(!SCRIPT_URL) {
+    document.getElementById('syncTxt').textContent = 'ยังไม่ตั้งค่า URL';
+    return;
+  }
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=get');
+    const data = await res.json();
+    if(data.orders) {
+      // Merge with local status
+      data.orders.forEach(remote => {
+        const existing = orders.find(o=>o.queue===remote.queue && o.timestamp===remote.timestamp);
+        if(!existing) {
+          orders.push({...remote, status:'waiting', id: Date.now()+Math.random()});
+          playNotif();
+        }
+      });
+      saveOrders();
+      renderQueue();
+      updateStats();
+    }
+    document.getElementById('syncTxt').textContent = 'อัปเดตแล้ว';
+  } catch(e) {
+    document.getElementById('syncTxt').textContent = 'ไม่ได้เชื่อมต่อ';
+  }
+}
+
+function playNotif() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+.4);
+    osc.start(); osc.stop(ctx.currentTime+.4);
+  } catch(e){}
+}
+
+// Poll every 15 seconds
+setInterval(fetchOrders, 15000);
+fetchOrders();
+
+// ===== RENDER QUEUE =====
+function renderQueue() {
+  const el = document.getElementById('queueList');
+  const active = orders.filter(o=>o.status!=='done');
+  const done = orders.filter(o=>o.status==='done');
+  const all = [...active, ...done];
+  if(!all.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>';return;}
+
+  el.innerHTML = all.map((o,idx)=>{
+    const sClass = {waiting:'s-waiting',cooking:'s-cooking',done:'s-done'}[o.status];
+    const cClass = o.status;
+    const sLabel = {waiting:'รอทำ',cooking:'🔥 กำลังทำ',done:'✅ เสร็จแล้ว'}[o.status];
+    const detailParts = [];
+    if(o.dough && o.dough!=='-') detailParts.push('แป้ง: '+o.dough);
+    if(o.toppings) detailParts.push('ไส้: '+o.toppings);
+    if(o.freeToppings) detailParts.push('ฟรี: '+o.freeToppings);
+    if(o.container) detailParts.push(o.container);
+    return `
+      <div class="order-card ${cClass}" id="card-${idx}">
+        <div class="card-top">
+          <div class="card-queue">#${o.queue}</div>
+          <div style="text-align:right;">
+            <div><span class="status-badge ${sClass}">${sLabel}</span></div>
+            <div class="card-time">${o.timestamp||''}</div>
+          </div>
+        </div>
+        <div class="card-menu">${o.menuName||'สร้างเอง'} — ฿${o.total}</div>
+        ${detailParts.length ? `<div class="card-detail">${detailParts.join(' · ')}</div>` : ''}
+        ${o.note ? `<div class="card-note">📝 ${o.note}</div>` : ''}
+        <div class="card-actions">
+          ${o.status==='waiting' ? `<button class="act-btn btn-cook" onclick="setStatus(${idx},'cooking')">🔥 เริ่มทำ</button>` : ''}
+          ${o.status==='cooking' ? `<button class="act-btn btn-done" onclick="setStatus(${idx},'done')">✅ เสร็จแล้ว</button>` : ''}
+          ${o.status==='done' ? `<span style="font-size:.8rem;color:var(--success);font-weight:600;">✅ ส่งให้ลูกค้าแล้ว</span>` : ''}
+          <button class="act-btn btn-del" onclick="removeOrder(${idx})">✕</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setStatus(idx, status) {
+  orders[idx].status = status;
+  saveOrders();
+  renderQueue();
+  updateStats();
+}
+
+function removeOrder(idx) {
+  orders.splice(idx,1);
+  saveOrders();
+  renderQueue();
+  updateStats();
+}
+
+function clearDone() {
+  orders = orders.filter(o=>o.status!=='done');
+  saveOrders();
+  renderQueue();
+  updateStats();
+}
+
+function resetAllQueues() {
+  if(!confirm('ล้างคิวทั้งหมดไหม?')) return;
+  orders = [];
+  saveOrders();
+  renderQueue();
+  updateStats();
+}
+
+function saveOrders() {
+  localStorage.setItem('ttc_orders', JSON.stringify(orders.slice(-100)));
+}
+
+// ===== STATS =====
+function updateStats() {
+  const rev = orders.reduce((s,o)=>s+parseInt(o.total||0),0);
+  document.getElementById('s-rev').textContent = '฿'+rev;
+  document.getElementById('s-ord').textContent = orders.length;
+  document.getElementById('s-wait').textContent = orders.filter(o=>o.status==='waiting').length;
+}
+
+// ===== REPORT =====
+function renderReport() {
+  const ic = {};
+  orders.forEach(o=>{
+    const n = o.menuName||'สร้างเอง';
+    ic[n] = (ic[n]||0)+1;
+  });
+  const sorted = Object.entries(ic).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const max = sorted[0]?.[1]||1;
+  document.getElementById('topItemsRpt').innerHTML = sorted.length===0
+    ? '<div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div>'
+    : sorted.map(([n,c],i)=>`
+      <div class="top-row">
+        <div class="rank">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-size:.82rem;font-weight:500;">${n}</div>
+          <div class="top-bar"><div class="top-fill" style="width:${Math.round(c/max*100)}%"></div></div>
+        </div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--accent-dk);">${c}</div>
+      </div>`).join('');
+
+  document.getElementById('histRpt').innerHTML = orders.length===0
+    ? '<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div>'
+    : [...orders].reverse().slice(0,15).map(o=>`
+      <div class="hist-row">
+        <span style="font-weight:600;">#${o.queue}</span>
+        <span style="color:var(--muted);font-size:.78rem;">${o.menuName||'สร้างเอง'}</span>
+        <span style="font-weight:600;color:var(--accent-dk);">฿${o.total}</span>
+      </div>`).join('');
+}
+
+// ===== SETTINGS =====
+function saveScriptUrl() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if(!url){alert('กรุณาใส่ URL');return;}
+  SCRIPT_URL = url;
+  localStorage.setItem('ttc_script_url', url);
+  alert('✅ บันทึกแล้ว! กำลังโหลดข้อมูล...');
+  fetchOrders();
+}
+
+function genQR() {
+  const url = document.getElementById('qrUrlInput').value.trim();
+  if(!url){alert('กรุณาใส่ URL หน้าสั่งอาหาร');return;}
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`;
+  document.getElementById('qrOutput').innerHTML = `
+    <img src="${qrUrl}" style="border-radius:10px;border:1px solid var(--border);" alt="QR Code">
+    <div style="font-size:.75rem;color:var(--muted);margin-top:6px;">กดค้างที่รูปเพื่อบันทึก QR Code</div>
+  `;
+}
+
+updateStats();
+renderQueue();
+document.getElementById('scriptUrlInput') && (document.getElementById('scriptUrlInput').value = SCRIPT_URL);
+</script>
+</body>
+</html>
