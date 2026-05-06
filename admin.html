@@ -31,10 +31,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .page{display:none;padding:8px 12px;}
 .page.active{display:block;}
 .queue-list{display:flex;flex-direction:column;gap:8px;}
-.order-card{background:white;border-radius:14px;border:2px solid var(--border);padding:12px;}
+.order-card{background:white;border-radius:14px;border:2px solid var(--border);padding:12px;transition: all 0.3s;}
 .order-card.waiting{border-color:var(--accent-lt);}
 .order-card.cooking{border-color:#FFD54F;background:#FFFDE7;}
 .order-card.done{border-color:#A5D6A7;background:#F1F8E9;opacity:.7;}
+/* สไตล์ใหม่สำหรับ ยกเลิก (สีเทา) */
+.order-card.cancelled{border-color:#D1D1D1;background:#F5F5F5;opacity:0.6;filter: grayscale(1);}
 .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .card-queue{font-family:'Kanit',sans-serif;font-size:1.5rem;font-weight:700;color:var(--accent);}
 .card-time{font-size:.72rem;color:var(--muted);}
@@ -42,15 +44,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .s-waiting{background:var(--accent-lt);color:var(--accent-dk);}
 .s-cooking{background:#FFE082;color:#E65100;}
 .s-done{background:#C8E6C9;color:#2E7D32;}
+.s-cancelled{background:#EEEEEE;color:#757575;}
 .card-menu{font-size:.9rem;font-weight:600;margin-bottom:3px;}
 .card-detail{font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:6px;}
 .card-note{font-size:.75rem;background:#FFF3E0;border-left:3px solid var(--accent);padding:4px 8px;border-radius:0 6px 6px 0;margin-bottom:6px;}
-.card-actions{display:flex;gap:6px;margin-top:10px;}
-.act-btn{flex:1;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:white;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;}
+.card-actions{display:flex;gap:6px;margin-top:10px;flex-wrap: wrap;}
+.act-btn{flex:1;min-width: 70px;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:white;font-family:'Sarabun',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;}
 .act-btn:active{transform:scale(.97);}
 .btn-cook{border-color:#FFD54F;color:#E65100;background:#FFFDE7;}
 .btn-done{border-color:#A5D6A7;color:#2E7D32;background:#F1F8E9;}
-.btn-del{border-color:#FFCDD2;color:var(--danger);}
+.btn-cancel{border-color:#D1D1D1;color:#757575;}
+.btn-del{border-color:#FFCDD2;color:var(--danger);max-width: 40px;}
 /* REPORT */
 .rpt-section{background:white;border-radius:14px;border:1px solid var(--border);padding:12px;margin-bottom:10px;}
 .rpt-title{font-family:'Kanit',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
@@ -102,20 +106,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="tab" onclick="switchTab('settings',this)">⚙️ ตั้งค่า</div>
 </div>
 
-<!-- QUEUE -->
 <div class="page active" id="page-queue">
   <div style="display:flex;justify-content:flex-end;padding:8px 0;">
-    <button onclick="clearDone()" style="padding:6px 14px;border-radius:9px;border:1px solid var(--border);background:white;font-size:.78rem;cursor:pointer;color:var(--muted);">🗑 ล้างคิวเสร็จ</button>
+    <button onclick="clearDone()" style="padding:6px 14px;border-radius:9px;border:1px solid var(--border);background:white;font-size:.78rem;cursor:pointer;color:var(--muted);">🗑 ล้างคิวเสร็จ/ยกเลิก</button>
   </div>
   <div class="queue-list" id="queueList">
     <div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>
   </div>
 </div>
 
-<!-- REPORT -->
 <div class="page" id="page-report">
   <div style="padding-top:8px;">
-    <!-- Summary Stats -->
     <div class="rpt-section">
       <div class="rpt-title">📈 สรุปภาพรวม</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="rptSummary">
@@ -130,13 +131,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
 
-    <!-- เมนูขายดี -->
     <div class="rpt-section">
       <div class="rpt-title">🏆 เมนูขายดี</div>
       <div id="topMenus"><div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div></div>
     </div>
 
-    <!-- วัตถุดิบขายดี -->
     <div class="rpt-section">
       <div class="rpt-title">🧂 วัตถุดิบที่ถูกสั่งบ่อย</div>
       <div class="rpt-tabs">
@@ -149,7 +148,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div id="ingFree" style="display:none"></div>
     </div>
 
-    <!-- ประวัติ -->
     <div class="rpt-section">
       <div class="rpt-title">🕐 ประวัติออเดอร์ทั้งหมด</div>
       <div id="histRpt"><div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div></div>
@@ -157,13 +155,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<!-- SETTINGS -->
 <div class="page" id="page-settings">
   <div style="padding-top:8px;">
     <div class="setting-row">
       <div class="setting-label">🔗 Google Apps Script URL</div>
       <input type="text" class="setting-input" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
-      <div class="setting-note">ใส่ URL ที่ได้จากการ Deploy Apps Script แล้วกดบันทึก</div>
       <button class="setting-btn" onclick="saveScriptUrl()">💾 บันทึก URL</button>
     </div>
     <div class="setting-row">
@@ -174,7 +170,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div class="setting-row">
       <div class="setting-label">🗑 ล้างคิวทั้งหมด (เริ่มวันใหม่)</div>
-      <div class="setting-note" style="margin-bottom:8px;">ล้างคิวออกจากหน้าจอ ไม่เด้งกลับมาอีก</div>
       <button onclick="hardReset()" style="width:100%;padding:10px;background:white;border:1.5px solid #FFCDD2;border-radius:10px;color:var(--danger);font-family:'Sarabun',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;">🗑 ล้างคิวทั้งหมด</button>
     </div>
   </div>
@@ -183,7 +178,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <script>
 let SCRIPT_URL = localStorage.getItem('ttc_script_url') || '';
 let orders = JSON.parse(localStorage.getItem('ttc_orders') || '[]');
-let allSheetOrders = []; // เก็บข้อมูลทั้งหมดจาก Sheets สำหรับรายงาน
+let allSheetOrders = []; 
 let ignoredKeys = JSON.parse(localStorage.getItem('ttc_ignored') || '[]');
 
 setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('th-TH');},1000);
@@ -206,12 +201,19 @@ async function fetchOrders(){
     const res = await fetch(SCRIPT_URL+'?action=get');
     const data = await res.json();
     if(data.orders){
-      allSheetOrders = data.orders; // เก็บทั้งหมดสำหรับรายงาน
+      allSheetOrders = data.orders; 
       data.orders.forEach(remote=>{
         const key=orderKey(remote);
         if(ignoredKeys.includes(key)) return;
         const existing=orders.find(o=>orderKey(o)===key);
-        if(!existing){ orders.push({...remote,status:'waiting'}); playNotif(); }
+        // ใช้สถานะจาก Sheet ถ้ามี
+        if(!existing){ 
+          orders.push({...remote, status: remote.status || 'waiting'}); 
+          if(!remote.status || remote.status === 'waiting') playNotif(); 
+        } else {
+          // อัปเดตสถานะถ้าใน Sheet เปลี่ยนแปลง (เช่น ยกเลิกจากเครื่องอื่น)
+          existing.status = remote.status || existing.status;
+        }
       });
       saveOrders(); renderQueue(); updateStats();
     }
@@ -235,16 +237,28 @@ fetchOrders();
 
 function renderQueue(){
   const el=document.getElementById('queueList');
-  const all=[...orders.filter(o=>o.status!=='done'),...orders.filter(o=>o.status==='done')];
+  // เรียงลำดับ: กำลังทำ > รอทำ > เสร็จแล้ว > ยกเลิก
+  const all=[
+    ...orders.filter(o=>o.status==='cooking'),
+    ...orders.filter(o=>o.status==='waiting'),
+    ...orders.filter(o=>o.status==='done'),
+    ...orders.filter(o=>o.status==='cancelled')
+  ];
+
   if(!all.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🥞</div>รอออเดอร์เข้า...</div>';return;}
-  el.innerHTML=all.map((o,idx)=>{
-    const sc={waiting:'s-waiting',cooking:'s-cooking',done:'s-done'}[o.status];
-    const sl={waiting:'รอทำ',cooking:'🔥 กำลังทำ',done:'✅ เสร็จแล้ว'}[o.status];
+  el.innerHTML=all.map((o)=>{
+    const sc={waiting:'s-waiting',cooking:'s-cooking',done:'s-done',cancelled:'s-cancelled'}[o.status];
+    const sl={waiting:'รอทำ',cooking:'🔥 กำลังทำ',done:'✅ เสร็จแล้ว',cancelled:'🚫 ยกเลิก'}[o.status];
+    
+    // หา Index จริงของออเดอร์ใน array หลัก
+    const realIdx = orders.findIndex(x => orderKey(x) === orderKey(o));
+
     const pts=[];
     if(o.dough&&o.dough!=='-') pts.push('แป้ง: '+o.dough);
     if(o.toppings) pts.push('ไส้: '+o.toppings);
     if(o.freeToppings) pts.push('ฟรี: '+o.freeToppings);
     if(o.container) pts.push(o.container);
+
     return `<div class="order-card ${o.status}">
       <div class="card-top">
         <div class="card-queue">#${o.queue}</div>
@@ -254,16 +268,44 @@ function renderQueue(){
       ${pts.length?`<div class="card-detail">${pts.join(' · ')}</div>`:''}
       ${o.note?`<div class="card-note">📝 ${o.note}</div>`:''}
       <div class="card-actions">
-        ${o.status==='waiting'?`<button class="act-btn btn-cook" onclick="setStatus(${idx},'cooking')">🔥 เริ่มทำ</button>`:''}
-        ${o.status==='cooking'?`<button class="act-btn btn-done" onclick="setStatus(${idx},'done')">✅ เสร็จแล้ว</button>`:''}
-        ${o.status==='done'?`<span style="font-size:.8rem;color:var(--success);font-weight:600;">✅ ส่งแล้ว</span>`:''}
-        <button class="act-btn btn-del" onclick="removeOrder(${idx})">✕</button>
+        ${o.status==='waiting'?`<button class="act-btn btn-cook" onclick="setStatus(${realIdx},'cooking')">🔥 เริ่มทำ</button>`:''}
+        ${o.status==='cooking'?`<button class="act-btn btn-done" onclick="setStatus(${realIdx},'done')">✅ เสร็จแล้ว</button>`:''}
+        
+        ${(o.status!=='done' && o.status!=='cancelled') ? `<button class="act-btn btn-cancel" onclick="confirmCancel(${realIdx})">🚫 ยกเลิก</button>` : ''}
+        
+        <button class="act-btn btn-del" onclick="removeOrder(${realIdx})">✕</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function setStatus(idx,s){orders[idx].status=s;saveOrders();renderQueue();updateStats();}
+async function setStatus(idx, s){
+  const order = orders[idx];
+  order.status = s;
+  saveOrders(); renderQueue(); updateStats();
+
+  if (SCRIPT_URL) {
+    try {
+      document.getElementById('syncTxt').textContent = 'กำลังซิงค์...';
+      const params = new URLSearchParams({
+        action: 'updateStatus',
+        queue: order.queue,
+        timestamp: order.timestamp,
+        status: s
+      });
+      await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      document.getElementById('syncTxt').textContent = 'อัปเดตแล้ว';
+    } catch (e) {
+      document.getElementById('syncTxt').textContent = 'ซิงค์ล้มเหลว';
+    }
+  }
+}
+
+function confirmCancel(idx) {
+  if(confirm('ยืนยันที่จะยกเลิกออเดอร์นี้ใช่หรือไม่? (ยอดเงินจะไม่ถูกนำไปคิดรายได้)')) {
+    setStatus(idx, 'cancelled');
+  }
+}
 
 function removeOrder(idx){
   const key=orderKey(orders[idx]);
@@ -273,12 +315,12 @@ function removeOrder(idx){
 }
 
 function clearDone(){
-  orders.filter(o=>o.status==='done').forEach(o=>{
+  orders.filter(o=>o.status==='done' || o.status==='cancelled').forEach(o=>{
     const key=orderKey(o);
     if(!ignoredKeys.includes(key)) ignoredKeys.push(key);
   });
   localStorage.setItem('ttc_ignored',JSON.stringify(ignoredKeys.slice(-500)));
-  orders=orders.filter(o=>o.status!=='done');
+  orders=orders.filter(o=>o.status!=='done' && o.status!=='cancelled');
   saveOrders();renderQueue();updateStats();
 }
 
@@ -293,7 +335,10 @@ function hardReset(){
 function saveOrders(){localStorage.setItem('ttc_orders',JSON.stringify(orders.slice(-100)));}
 
 function updateStats(){
-  const rev=orders.reduce((s,o)=>s+parseInt(o.total||0),0);
+  // คำนวณรายได้เฉพาะที่ไม่ใช่สถานะ cancelled
+  const activeOrders = orders.filter(o => o.status !== 'cancelled');
+  const rev = activeOrders.reduce((s,o)=>s+parseInt(o.total||0),0);
+  
   document.getElementById('s-rev').textContent='฿'+rev;
   document.getElementById('s-ord').textContent=orders.length;
   document.getElementById('s-wait').textContent=orders.filter(o=>o.status==='waiting').length;
@@ -301,7 +346,9 @@ function updateStats(){
 
 // ===== REPORT =====
 function renderReport(){
-  const src = allSheetOrders.length ? allSheetOrders : orders;
+  // กรองเฉพาะออเดอร์ที่ไม่ถูกยกเลิกมาทำรายงาน
+  const src = (allSheetOrders.length ? allSheetOrders : orders).filter(o => o.status !== 'cancelled');
+  const fullSrc = allSheetOrders.length ? allSheetOrders : orders; // สำหรับประวัติทั้งหมด
 
   // Summary
   const totalRev = src.reduce((s,o)=>s+parseInt(o.total||0),0);
@@ -317,7 +364,7 @@ function renderReport(){
     ?'<div style="font-size:.82rem;color:var(--muted);">ยังไม่มีข้อมูล</div>'
     :ms.map(([n,c],i)=>topRow(i+1,n,c,mm,'var(--accent)')).join('');
 
-  // วัตถุดิบ — ไส้หลัก
+  // วัตถุดิบ
   const mainIng={};
   src.forEach(o=>{
     if(!o.toppings) return;
@@ -327,7 +374,6 @@ function renderReport(){
     });
   });
 
-  // วัตถุดิบ — ท็อปปิ้งฟรี
   const freeIng={};
   src.forEach(o=>{
     if(!o.freeToppings) return;
@@ -337,7 +383,6 @@ function renderReport(){
     });
   });
 
-  // รวม
   const allIng={...mainIng};
   Object.entries(freeIng).forEach(([k,v])=>{allIng[k]=(allIng[k]||0)+v;});
 
@@ -353,13 +398,13 @@ function renderReport(){
   document.getElementById('ingMain').innerHTML=renderIng(mainIng,'#C4601A');
   document.getElementById('ingFree').innerHTML=renderIng(freeIng,'#2E7D32');
 
-  // ประวัติ
-  document.getElementById('histRpt').innerHTML=src.length===0
+  // ประวัติ (แสดงทั้งหมดรวมที่ยกเลิกด้วย แต่มีเครื่องหมายบอก)
+  document.getElementById('histRpt').innerHTML=fullSrc.length===0
     ?'<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:1rem;">ยังไม่มีประวัติ</div>'
-    :[...src].reverse().slice(0,20).map(o=>`
-      <div class="hist-row">
+    :[...fullSrc].reverse().slice(0,30).map(o=>`
+      <div class="hist-row" style="${o.status==='cancelled'?'opacity:0.5;text-decoration:line-through;':''}">
         <span style="font-weight:600;">#${o.queue}</span>
-        <span style="color:var(--muted);font-size:.75rem;flex:1;padding:0 8px;">${o.menuName||'สร้างเอง'}${o.toppings?'<br><span style="font-size:.7rem;">'+o.toppings+'</span>':''}</span>
+        <span style="color:var(--muted);font-size:.75rem;flex:1;padding:0 8px;">${o.menuName||'สร้างเอง'} ${o.status==='cancelled'?'(ยกเลิก)':''}</span>
         <span style="font-weight:700;color:var(--accent-dk);">฿${o.total}</span>
       </div>`).join('');
 }
