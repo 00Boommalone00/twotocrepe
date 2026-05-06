@@ -25,7 +25,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .step-tab{flex:1;min-width:80px;padding:10px 4px;text-align:center;font-size:.75rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .step-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 .step-tab.done{color:var(--success);}
- 
+
 /* PAGES */
 .page{display:none;padding:12px;}
 .page.active{display:block;}
@@ -133,6 +133,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <button class="opt-btn" onclick="selFlavor(this,'หวาน')"><span>🍰 หวาน</span></button>
       <button class="opt-btn" onclick="selFlavor(this,'คาว')"><span>🧀 คาว</span></button>
     </div>
+    <div class="opt-grid wide" style="margin-top:8px;">
+      <button class="opt-btn" onclick="selFlavor(this,'mix')" style="justify-content:center;background:linear-gradient(135deg,#FFF0DC 50%,#F0F4FF 50%);border-color:var(--accent);">
+        <span>🍱 Mix — หวาน + คาว รวมกัน</span>
+      </button>
+    </div>
   </div>
   <div id="toppingSection"></div>
 </div>
@@ -203,8 +208,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 <script>
 // ===== CONFIG — เปลี่ยนเป็น URL ของคุณ =====
-  
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSD5pvJpHY7l-vy9cyJpY9jXR7oEjXUfzV0HYzJuJE18LAQQ_FGysH52Lu-pc40vviiw/exec';
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 // ===== MENU DATA =====
 const RECOMMENDED = [
@@ -295,17 +299,28 @@ function selFlavor(btn, val) {
 }
 
 function renderToppings() {
-  const TOPS = state.flavor === 'หวาน' ? SWEET : SALTY;
   let html = '';
-  for(const [price, items] of Object.entries(TOPS)) {
-    html += `<div class="sec">
-      <div class="price-tier">ไส้ละ ฿${price}</div>
-      <div class="opt-grid">${items.map(t=>`
-        <button class="opt-btn" onclick="toggleTopping(this,'${t}',${price})">
-          <span>${t}</span><span class="opt-price">+฿${price}</span>
-        </button>`).join('')}
-      </div>
-    </div>`;
+  if(state.flavor === 'หวาน' || state.flavor === 'mix') {
+    html += `<div class="sec"><div class="sec-title" style="font-size:.85rem;">🍰 ไส้หวาน</div>`;
+    for(const [price, items] of Object.entries(SWEET)) {
+      html += `<div class="price-tier">ไส้ละ ฿${price}</div>
+        <div class="opt-grid">${items.map(t=>`
+          <button class="opt-btn" onclick="toggleTopping(this,'${t}',${price})">
+            <span>${t}</span><span class="opt-price">+฿${price}</span>
+          </button>`).join('')}</div>`;
+    }
+    html += `</div>`;
+  }
+  if(state.flavor === 'คาว' || state.flavor === 'mix') {
+    html += `<div class="sec"><div class="sec-title" style="font-size:.85rem;">🧀 ไส้คาว</div>`;
+    for(const [price, items] of Object.entries(SALTY)) {
+      html += `<div class="price-tier">ไส้ละ ฿${price}</div>
+        <div class="opt-grid">${items.map(t=>`
+          <button class="opt-btn" onclick="toggleTopping(this,'${t}',${price})">
+            <span>${t}</span><span class="opt-price">+฿${price}</span>
+          </button>`).join('')}</div>`;
+    }
+    html += `</div>`;
   }
   document.getElementById('toppingSection').innerHTML = html;
 }
